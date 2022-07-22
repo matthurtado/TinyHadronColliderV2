@@ -99,10 +99,10 @@ function ColliderScene:update()
 	Noble.Text.draw(scoreText, scoreTextWidth, 20)
 	gfx.popContext()
 	-- Check if crank has made full rotation, and add to score if so
-	if (radialPosition > 360) then
+	if (radialPosition >= 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		Noble.GameData.set("score", Noble.GameData.get("score") + Noble.GameData.get("manual_multiplier"))
+		Noble.GameData.set("score", Noble.GameData.get("score") + Noble.GameData.get("manual_multiplier") + Noble.GameData.get("auto_multiplier"))
 		SpawnNewSprite(200, 120)
 	end
 
@@ -118,13 +118,6 @@ function ColliderScene:update()
 			end
 		end
 	end
-	-- table.each(sparkSprites, function(sprite)
-	-- 	sprite:moveTo(sprite.x + xOffset, sprite.y + 5)
-	-- 	if (sprite.y > 240) then
-	-- 		sprite:remove()
-	-- 		sparkSprites[sprite] = nil
-	-- 	end
-	-- end)
 	gfx.popContext()
 end
 
@@ -158,6 +151,7 @@ function ColliderScene:resume()
 	ColliderScene.super.resume(self)
 	-- Your code here
 end
+
 local previous_crank_angle = 0
 -- You can define this here, or within your scene's init() function.
 ColliderScene.inputHandler = {
@@ -175,14 +169,15 @@ ColliderScene.inputHandler = {
 		sparkSprite:moveTo(sparkSprite.x + 1, sparkSprite.y)
 	end,
 	cranked = function(change, acceleratedChange)
-		--radialPosition += (1 * math.abs(change)) + Noble.GameData.get("auto_multiplier")
-		local newAngle = previous_crank_angle + change
-		radialPosition = newAngle
-		-- rotate particle around center point
-		local x = math.cos(math.rad(newAngle)) * 60
-		local y = math.sin(math.rad(newAngle)) * 60
-		particleSprite:moveTo(x+200, y+120)
-		previous_crank_angle = playdate.getCrankPosition()
+		radialPosition += (1 * math.abs(change))
+		print("crank pos: "..radialPosition)
+		local theta = math.rad(change)
+		local pX = particleSprite.x
+		local pY = particleSprite.y
+		local newX = math.cos(theta) * (pX - 200) - math.sin(theta) * (pY - 120) + 200
+		local newY = math.sin(theta) * (pX - 200) + math.cos(theta) * (pY - 120) + 120
+
+		particleSprite:moveTo(newX, newY)
 	end,
 	crankDocked = function()
 		-- Your code here
