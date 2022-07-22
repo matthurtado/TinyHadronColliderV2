@@ -29,7 +29,10 @@ function MainMenu:init()
         end,
         AButtonDown = function()
             Noble.transition(ColliderScene, 1, Noble.TransitionType.DIP_TO_WHITE)
-        end
+        end,
+        BButtonDown = function()
+            Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_TO_WHITE)
+        end,
     }
 
     start_text_width = Utilities.getHorizontalCenterForText("Press A To Start")

@@ -21,3 +21,9 @@ function Utilities.getHorizontalCenterForText(text)
 	local screen_width = playdate.display.getWidth()
 	return screen_width / 2 - current_font:getTextWidth(text) / 2
 end
+
+function Utilities.rotateAroundPoint(theta, pX, pY, oX, oY)
+	local newX = math.cos(theta) * (pX - oX) - math.sin(theta) * (pY - oY) + oX
+	local newY = math.sin(theta) * (pX - oX) + math.cos(theta) * (pY - oY) + oY
+	return newX, newY
+end

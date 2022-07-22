@@ -156,33 +156,21 @@ local previous_crank_angle = 0
 -- You can define this here, or within your scene's init() function.
 ColliderScene.inputHandler = {
 	AButtonDown = function()
-		-- Your code here
 	end,
 	BButtonDown = function()
-		-- Your code here
 	end,
 	leftButtonDown = function()
-		-- Your code here
 	end,
 	rightButtonDown = function()
-		-- Your code here
-		sparkSprite:moveTo(sparkSprite.x + 1, sparkSprite.y)
 	end,
 	cranked = function(change, acceleratedChange)
 		radialPosition += (1 * math.abs(change))
-		print("crank pos: "..radialPosition)
 		local theta = math.rad(change)
-		local pX = particleSprite.x
-		local pY = particleSprite.y
-		local newX = math.cos(theta) * (pX - 200) - math.sin(theta) * (pY - 120) + 200
-		local newY = math.sin(theta) * (pX - 200) + math.cos(theta) * (pY - 120) + 120
-
+		local newX, newY = Utilities.rotateAroundPoint(theta, particleSprite.x, particleSprite.y, 200, 120)
 		particleSprite:moveTo(newX, newY)
 	end,
 	crankDocked = function()
-		-- Your code here
 	end,
 	crankUndocked = function()
-		-- Your code here
 	end
 }
