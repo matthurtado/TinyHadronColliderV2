@@ -1,5 +1,5 @@
 # Tiny Hadron Collider
-<img src="https://i.imgur.com/bFylFgO.gif" width="400" height="240" />
+<img src="https://i.imgur.com/v7ULMUu.gif" width="400" height="240" />
 
 ### A very small idler for the PlayDate
 
