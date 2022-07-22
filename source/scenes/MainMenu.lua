@@ -10,8 +10,8 @@ local logo_collider
 local collider_sequence
 local hadron_sequence
 local tiny_sequence
-local tiny_sequence_started = false
 local hadron_sequence_started = false
+local start_text_width = 0
 
 function MainMenu:init()
     MainMenu.super.init(self)
@@ -31,6 +31,8 @@ function MainMenu:init()
             Noble.transition(ColliderScene, 1, Noble.TransitionType.DIP_TO_WHITE)
         end
     }
+
+    start_text_width = Utilities.getHorizontalCenterForText("Press A To Start")
 
 end
 
@@ -66,7 +68,7 @@ function MainMenu:update()
         logo_hadron:draw(10, hadron_sequence:get())
     end
     if(hadron_sequence:isDone()) then
-        Noble.Text.draw("Press A to start", Noble.Text.getHorizontalCenterForText("Press A to start"), 220)
+        Noble.Text.draw("Press A to start", start_text_width, 220)
     end
 end
 

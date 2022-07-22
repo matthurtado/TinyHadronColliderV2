@@ -15,3 +15,9 @@ function Utilities.getIndex(tab, val)
 	end
 	return index
 end
+
+function Utilities.getHorizontalCenterForText(text)
+	local current_font = Noble.Text.getCurrentFont()
+	local screen_width = playdate.display.getWidth()
+	return screen_width / 2 - current_font:getTextWidth(text) / 2
+end

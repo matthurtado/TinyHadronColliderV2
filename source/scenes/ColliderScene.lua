@@ -18,11 +18,11 @@ local outerWallSprite
 local particleSprite
 local sparkSprite
 local sparkSprites         = {}
-local deadSprites          = {}
 local radialPosition       = 0
 local particleImageTable   = playdate.graphics.imagetable.new("assets/images/pulp-tile-0-layer-Sprites-fps-20-count-4-table-8-8")
 local particleSpritesIndex = 1
 local gTime                = 0
+local scoreTextWidth       = 0
 
 ColliderScene.backgroundColor = Graphics.kColorWhite
 math.randomseed(playdate.getSecondsSinceEpoch())
@@ -32,7 +32,7 @@ function ColliderScene:init()
 	ColliderScene.super.init(self)
 	thcSprite = NobleSprite("assets/images/thc.png")
 	outerWallSprite = NobleSprite("assets/images/outer_wall.png")
-	particleSprite = NobleSprite("assets/images/particle.png")
+	particleSprite = NobleSprite("assets/images/particle2.png")
 end
 
 -- When transitioning from another scene, this runs as soon as this scene needs to be visible (this moment depends on which transition type is used).
@@ -66,8 +66,9 @@ function ColliderScene:start()
 	outerWallSprite:add()
 	outerWallSprite:moveTo(200, 120)
 	particleSprite:add()
-	particleSprite:moveTo(200, 120)
+	particleSprite:moveTo(200, 59)
 	Noble.Input.setCrankIndicatorStatus(true)
+	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999")
 end
 
 -- This runs once per frame.
@@ -89,31 +90,41 @@ function ColliderScene:update()
 	-- Play intro sequence
 	thcSprite:setRotation(introSequence:get())
 	gfx.pushContext(outerWallSprite)
-		gfx.setDitherPattern(introSequenceBg:get())
+	gfx.setDitherPattern(introSequenceBg:get())
 	gfx.popContext()
 
 	gfx.pushContext()
-		gfx.setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		local scoreText = "Score: " .. tostring(Noble.GameData.get("score"))
-		Noble.Text.draw(scoreText, Noble.Text.getHorizontalCenterForText(scoreText), 20)
+	gfx.setImageDrawMode(playdate.graphics.kDrawModeNXOR)
+	local scoreText = "Score: " .. tostring(Noble.GameData.get("score"))
+	Noble.Text.draw(scoreText, scoreTextWidth, 20)
 	gfx.popContext()
 	-- Check if crank has made full rotation, and add to score if so
 	if (radialPosition > 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
 		Noble.GameData.set("score", Noble.GameData.get("score") + Noble.GameData.get("manual_multiplier"))
-		print(Noble.GameData.get("score"))
-		SpawnNewSprite(particleSprite.x, particleSprite.y)
+		SpawnNewSprite(200, 120)
 	end
-	gfx.pushContext()
+
 	-- Update spark particles
-	table.each(sparkSprites, function(sprite)
-		sprite:moveTo(sprite.x + xOffset, sprite.y + 5)
-		if (sprite.y > 400) then
-			sprite:remove()
-			sparkSprites[sprite] = nil
+	gfx.pushContext()
+	for i = #sparkSprites, 1, -1 do
+		local sprite = sparkSprites[i]
+		if (sprite) then
+			sprite:moveTo(sprite.x + xOffset, sprite.y + 5)
+			if (sprite.y > 240) then
+				sprite:remove()
+				sparkSprites[sprite] = nil
+			end
 		end
-	end)
+	end
+	-- table.each(sparkSprites, function(sprite)
+	-- 	sprite:moveTo(sprite.x + xOffset, sprite.y + 5)
+	-- 	if (sprite.y > 240) then
+	-- 		sprite:remove()
+	-- 		sparkSprites[sprite] = nil
+	-- 	end
+	-- end)
 	gfx.popContext()
 end
 
@@ -147,7 +158,7 @@ function ColliderScene:resume()
 	ColliderScene.super.resume(self)
 	-- Your code here
 end
-
+local previous_crank_angle = 0
 -- You can define this here, or within your scene's init() function.
 ColliderScene.inputHandler = {
 	AButtonDown = function()
@@ -164,9 +175,14 @@ ColliderScene.inputHandler = {
 		sparkSprite:moveTo(sparkSprite.x + 1, sparkSprite.y)
 	end,
 	cranked = function(change, acceleratedChange)
-		radialPosition += (1 * math.abs(change)) + Noble.GameData.get("auto_multiplier")
-		-- Your code here
-		particleSprite:setRotation(radialPosition)
+		--radialPosition += (1 * math.abs(change)) + Noble.GameData.get("auto_multiplier")
+		local newAngle = previous_crank_angle + change
+		radialPosition = newAngle
+		-- rotate particle around center point
+		local x = math.cos(math.rad(newAngle)) * 60
+		local y = math.sin(math.rad(newAngle)) * 60
+		particleSprite:moveTo(x+200, y+120)
+		previous_crank_angle = playdate.getCrankPosition()
 	end,
 	crankDocked = function()
 		-- Your code here
