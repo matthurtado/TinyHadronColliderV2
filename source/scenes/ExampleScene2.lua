@@ -16,23 +16,23 @@ function ExampleScene2:init()
 
 	menu = Noble.Menu.new(false, Noble.Text.ALIGN_LEFT, false, Graphics.kColorBlack, 4,6,0, Noble.Text.FONT_SMALL)
 
-	menu:addItem(Noble.TransitionType.DIP_TO_BLACK, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
-	menu:addItem(Noble.TransitionType.DIP_TO_WHITE, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_TO_WHITE) end)
-	menu:addItem(Noble.TransitionType.DIP_METRO_NEXUS, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_METRO_NEXUS) end)
-	menu:addItem(Noble.TransitionType.DIP_WIDGET_SATCHEL, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL) end)
-	menu:addItem(Noble.TransitionType.CROSS_DISSOLVE, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.CROSS_DISSOLVE) end)
-	menu:addItem(Noble.TransitionType.SLIDE_OFF_UP, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.SLIDE_OFF_UP) end)
-	menu:addItem(Noble.TransitionType.SLIDE_OFF_DOWN, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.SLIDE_OFF_DOWN) end)
-	menu:addItem(Noble.TransitionType.SLIDE_OFF_LEFT, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.SLIDE_OFF_LEFT) end)
-	menu:addItem(Noble.TransitionType.SLIDE_OFF_RIGHT, function() Noble.transition(ExampleScene, 1, Noble.TransitionType.SLIDE_OFF_RIGHT) end)
+	menu:addItem(Noble.TransitionType.DIP_TO_BLACK, function() Noble.transition(MainMenu, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	menu:addItem(Noble.TransitionType.DIP_TO_WHITE, function() Noble.transition(MainMenu, 1, Noble.TransitionType.DIP_TO_WHITE) end)
+	menu:addItem(Noble.TransitionType.DIP_METRO_NEXUS, function() Noble.transition(MainMenu, 1, Noble.TransitionType.DIP_METRO_NEXUS) end)
+	menu:addItem(Noble.TransitionType.DIP_WIDGET_SATCHEL, function() Noble.transition(MainMenu, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL) end)
+	menu:addItem(Noble.TransitionType.CROSS_DISSOLVE, function() Noble.transition(MainMenu, 1, Noble.TransitionType.CROSS_DISSOLVE) end)
+	menu:addItem(Noble.TransitionType.SLIDE_OFF_UP, function() Noble.transition(MainMenu, 1, Noble.TransitionType.SLIDE_OFF_UP) end)
+	menu:addItem(Noble.TransitionType.SLIDE_OFF_DOWN, function() Noble.transition(MainMenu, 1, Noble.TransitionType.SLIDE_OFF_DOWN) end)
+	menu:addItem(Noble.TransitionType.SLIDE_OFF_LEFT, function() Noble.transition(MainMenu, 1, Noble.TransitionType.SLIDE_OFF_LEFT) end)
+	menu:addItem(Noble.TransitionType.SLIDE_OFF_RIGHT, function() Noble.transition(MainMenu, 1, Noble.TransitionType.SLIDE_OFF_RIGHT) end)
 	menu:addItem(
 		"Score",
 		function()
 			local newValue = math.random(100,99999)
-			Noble.GameData.set("Score", newValue)
+			Noble.GameData.set("score", newValue)
 			menu:setItemDisplayName("Score", "Change Score: " .. newValue)
 		end, nil,
-		"Change Score: " .. Noble.GameData.get("Score")
+		"Change Score: " .. Noble.GameData.get("score")
 	)
 
 	local crankTick = 0

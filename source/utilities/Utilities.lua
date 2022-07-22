@@ -5,3 +5,13 @@
 function Utilities.getZero()
 	return 0
 end
+
+function Utilities.getIndex(tab, val)
+	local index = nil
+	for i, v in ipairs(tab) do
+		if (v.id == val) then
+			index = i
+		end
+	end
+	return index
+end
