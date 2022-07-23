@@ -16,13 +16,13 @@ local introSequenceBg
 local thcSprite
 local outerWallSprite
 local particleSprite
-local sparkSprite
 local sparkSprites         = {}
 local radialPosition       = 0
 local particleImageTable   = playdate.graphics.imagetable.new("assets/images/pulp-tile-0-layer-Sprites-fps-20-count-4-table-8-8")
 local particleSpritesIndex = 1
 local gTime                = 0
 local scoreTextWidth       = 0
+local auto_timer = nil
 
 ColliderScene.backgroundColor = Graphics.kColorWhite
 math.randomseed(playdate.getSecondsSinceEpoch())
@@ -56,6 +56,13 @@ local function SpawnNewSprite(x, y)
 	sparkSprites[particleSpritesIndex] = sprite
 end
 
+local function SpawnNewSprites(numberOfSprites, x,y)
+	for i = 1, numberOfSprites do
+		SpawnNewSprite(x, y)
+	end
+end
+
+
 -- This runs once a transition from another scene is complete.
 function ColliderScene:start()
 	ColliderScene.super.start(self)
@@ -68,13 +75,21 @@ function ColliderScene:start()
 	particleSprite:add()
 	particleSprite:moveTo(200, 59)
 	Noble.Input.setCrankIndicatorStatus(true)
-	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999")
+	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999", Noble.Text.FONT_LARGE)
+	auto_timer = playdate.timer.keyRepeatTimerWithDelay(1000, 1000, function ()
+		local auto_multiplier = Noble.GameData.get("auto_multiplier")
+		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier)
+		if(auto_multiplier < 10) then
+			SpawnNewSprites(auto_multiplier, 200, 120)
+		else
+			SpawnNewSprites(10, 200, 120)
+		end
+	end)
 end
 
 -- This runs once per frame.
 function ColliderScene:update()
 	ColliderScene.super.update(self)
-
 	-- Setup delta time for update drawing calculations
 	local time_delta = 0
 
@@ -85,7 +100,7 @@ function ColliderScene:update()
 	self.last_sample_time = current_time
 	gTime = gTime + time_delta
 	local sine = math.sin(gTime)
-	local xOffset = sine * 5
+	local xOffset = sine * 15
 
 	-- Play intro sequence
 	thcSprite:setRotation(introSequence:get())
@@ -95,14 +110,23 @@ function ColliderScene:update()
 
 	gfx.pushContext()
 	gfx.setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-	local scoreText = "Score: " .. tostring(Noble.GameData.get("score"))
-	Noble.Text.draw(scoreText, scoreTextWidth, 20)
+
+	local current_score = Noble.GameData.get("score")
+	local current_manual_multiplier = Noble.GameData.get("manual_multiplier")
+	local current_auto_multiplier = Noble.GameData.get("auto_multiplier")
+
+	local scoreText = "Score: " .. tostring(current_score)
+	local menuText = "(B): Item Shop"
+	Noble.Text.draw(scoreText, scoreTextWidth, 20, nil, nil, Noble.Text.FONT_LARGE)
+	Noble.Text.draw(menuText, Utilities.getHorizontalCenterForText(menuText, Noble.Text.FONT_LARGE), 220, nil, nil,
+		Noble.Text.FONT_LARGE)
 	gfx.popContext()
 	-- Check if crank has made full rotation, and add to score if so
 	if (radialPosition >= 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		Noble.GameData.set("score", Noble.GameData.get("score") + Noble.GameData.get("manual_multiplier") + Noble.GameData.get("auto_multiplier"))
+		Noble.GameData.set("score",
+			current_score + current_manual_multiplier + current_auto_multiplier)
 		SpawnNewSprite(200, 120)
 	end
 
@@ -134,6 +158,8 @@ function ColliderScene:exit()
 	thcSprite:remove()
 	outerWallSprite:remove()
 	particleSprite:remove()
+	auto_timer:remove()
+	playdate.graphics.sprite.removeAll()
 end
 
 -- This runs once a transition to another scene completes.
@@ -158,6 +184,7 @@ ColliderScene.inputHandler = {
 	AButtonDown = function()
 	end,
 	BButtonDown = function()
+		Noble.transition(ShopScene, 1, Noble.TransitionType.DIP_TO_WHITE)
 	end,
 	leftButtonDown = function()
 	end,

@@ -31,7 +31,6 @@ function MainMenu:init()
             Noble.transition(ColliderScene, 1, Noble.TransitionType.DIP_TO_WHITE)
         end,
         BButtonDown = function()
-            Noble.transition(ExampleScene, 1, Noble.TransitionType.DIP_TO_WHITE)
         end,
     }
 
