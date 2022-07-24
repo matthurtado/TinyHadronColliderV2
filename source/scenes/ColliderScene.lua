@@ -18,7 +18,7 @@ local outerWallSprite
 local particleSprite
 local sparkSprites         = {}
 local radialPosition       = 0
-local particleImageTable   = playdate.graphics.imagetable.new("assets/images/pulp-tile-0-layer-Sprites-fps-20-count-4-table-8-8")
+local particleImageTable   = playdate.graphics.imagetable.new("assets/images/sparks.gif")
 local particleSpritesIndex = 1
 local gTime                = 0
 local scoreTextWidth       = 0
@@ -46,14 +46,19 @@ function ColliderScene:enter()
 end
 
 local function SpawnNewSprite(x, y)
-	particleSpritesIndex = particleSpritesIndex + 1
+	print("Array len:"..#sparkSprites)
 	local sprite = AnimatedSprite.new(particleImageTable)
+	sprite:addState("falling",nil, nil, nil, {loop = false}, true)
+	sprite.states["falling"].onFrameChangedEvent = function(self)
+		if(self._currentFrame == 17) then
+			self:remove()
+		end
+	end
 	sprite:setZIndex(particleSpritesIndex)
 	sprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
 	sprite:moveTo(x, y)
 	sprite:playAnimation()
 	sprite:add()
-	sparkSprites[particleSpritesIndex] = sprite
 end
 
 local function SpawnNewSprites(numberOfSprites, x,y)
@@ -100,7 +105,6 @@ function ColliderScene:update()
 	self.last_sample_time = current_time
 	gTime = gTime + time_delta
 	local sine = math.sin(gTime)
-	local xOffset = sine * 15
 
 	-- Play intro sequence
 	thcSprite:setRotation(introSequence:get())
@@ -127,22 +131,8 @@ function ColliderScene:update()
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
 		Noble.GameData.set("score",
 			current_score + current_manual_multiplier + current_auto_multiplier)
-		SpawnNewSprite(200, 120)
+		SpawnNewSprite(math.random(5,395), 150)
 	end
-
-	-- Update spark particles
-	gfx.pushContext()
-	for i = #sparkSprites, 1, -1 do
-		local sprite = sparkSprites[i]
-		if (sprite) then
-			sprite:moveTo(sprite.x + xOffset, sprite.y + 5)
-			if (sprite.y > 240) then
-				sprite:remove()
-				sparkSprites[sprite] = nil
-			end
-		end
-	end
-	gfx.popContext()
 end
 
 -- This runs once per frame, and is meant for drawing code.
