@@ -41,14 +41,12 @@ function Utilities.tryPurchaseItem(item)
 	local items = Noble.GameData.get("items")
 
 	if (current_score >= next_price) then
-		Noble.GameData.set("score", current_score - next_price)
+		Noble.GameData.set("score", current_score - next_price, nil, false)
 		item.current_quantity = item.current_quantity + 1
 		items[item.item_id] = item
-		Noble.GameData.set("items", items)
-		Noble.GameData.set("auto_multiplier", Noble.GameData.get("auto_multiplier") + item.base_auto_multiplier)
-		Noble.GameData.set("manual_multiplier", Noble.GameData.get("manual_multiplier") + item.base_manual_multiplier)
-		Utilities.saveCurrentTime()
-		Noble.GameData.save()
+		Noble.GameData.set("items", items, nil, false)
+		Noble.GameData.set("auto_multiplier", Noble.GameData.get("auto_multiplier") + item.base_auto_multiplier, nil, false)
+		Noble.GameData.set("manual_multiplier", Noble.GameData.get("manual_multiplier") + item.base_manual_multiplier, nil, false)
 		return true
 	else
 		print("Not enough money!")
@@ -69,14 +67,15 @@ function Utilities.getTimeDiffInSeconds(t1, t2)
 			secondDiff + (millisecondDiff / 1000)
 end
 
-function Utilities.saveCurrentTime()
-	Noble.GameData.set("lastGMT", playdate.getGMTTime())
+function Utilities.updateTimeAndSave()
+	Noble.GameData.set("lastGMT", playdate.getGMTTime(), nil, false)
+	Noble.GameData.save()
 end
 
 function Utilities.updateScoreSinceLastPlay()
 	local secondsSinceLastPlay = Utilities.getTimeDiffInSeconds(Noble.GameData.get("lastGMT"), playdate.getGMTTime())
 	local current_score = Noble.GameData.get("score")
 	local auto_multiplier = Noble.GameData.get("auto_multiplier")
-	Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay))
-	Utilities.saveCurrentTime()
+	Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay), nil, false)
+	Utilities.updateTimeAndSave()
 end

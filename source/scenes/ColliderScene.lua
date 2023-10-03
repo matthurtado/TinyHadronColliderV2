@@ -84,8 +84,7 @@ function ColliderScene:start()
 	Noble.Input.setCrankIndicatorStatus(true)
 	auto_timer = playdate.timer.keyRepeatTimerWithDelay(1000, 1000, function ()
 		local auto_multiplier = Noble.GameData.get("auto_multiplier")
-		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier)
-		Utilities.saveCurrentTime()
+		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier, nil, false)
 		if(auto_multiplier < 10) then
 			SpawnNewSprites(auto_multiplier, 200, 120)
 		else
@@ -131,8 +130,7 @@ function ColliderScene:update()
 	if (radialPosition >= 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		Noble.GameData.set("score", current_score + current_manual_multiplier + current_auto_multiplier)
-		Utilities.saveCurrentTime()
+		Noble.GameData.set("score", current_score + current_manual_multiplier + current_auto_multiplier, nil, false)
 		SpawnNewSprite(math.random(5,395), 150)
 	end
 end
@@ -147,6 +145,7 @@ end
 function ColliderScene:exit()
 	ColliderScene.super.exit(self)
 	-- Your code here
+	Utilities.updateTimeAndSave()
 	thcSprite:remove()
 	outerWallSprite:remove()
 	particleSprite:remove()
@@ -162,7 +161,7 @@ end
 
 function ColliderScene:pause()
 	ColliderScene.super.pause(self)
-	Utilities.saveCurrentTime()
+	Utilities.updateTimeAndSave()
 end
 
 function ColliderScene:resume()

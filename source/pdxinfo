@@ -3,5 +3,5 @@ author=OOMC LLC
 description=An even smaller, even dumber, idler
 bundleID=com.oomcllc.TinyHadronColliderV2
 version=0.0.2
-buildNumber=2
+buildNumber=3
 imagePath=assets/launcher/

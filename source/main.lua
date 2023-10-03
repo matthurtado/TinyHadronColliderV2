@@ -68,11 +68,19 @@ Noble.GameData.setup({
 Utilities.updateScoreSinceLastPlay()
 
 function playdate.deviceWillLock()
-	Utilities.saveCurrentTime()
+	Utilities.updateTimeAndSave()
 end
 
 function playdate.deviceDidUnlock()
 	Utilities.updateScoreSinceLastPlay()
+end
+
+function playdate.gameWillTerminate()
+	Utilities.updateTimeAndSave()
+end
+
+function playdate.deviceWillSleep()
+	Utilities.updateTimeAndSave()
 end
 
 Noble.showFPS = false
