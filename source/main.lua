@@ -64,12 +64,16 @@ Noble.GameData.setup({
 	}
 }, 1, true, true)
 
--- update score based on idle time
-local secondsSinceLastPlay = Utilities.getTimeDiffInSeconds(Noble.GameData.get("lastGMT"), playdate.getGMTTime())
-local current_score = Noble.GameData.get("score")
-local auto_multiplier = Noble.GameData.get("auto_multiplier")
-Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay))
-Utilities.saveCurrentTime()
+-- update score based on seconds since the game was last played
+Utilities.updateScoreSinceLastPlay()
+
+function playdate.deviceWillLock()
+	Utilities.saveCurrentTime()
+end
+
+function playdate.deviceDidUnlock()
+	Utilities.updateScoreSinceLastPlay()
+end
 
 Noble.showFPS = false
 

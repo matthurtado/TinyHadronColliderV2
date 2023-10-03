@@ -162,12 +162,12 @@ end
 
 function ColliderScene:pause()
 	ColliderScene.super.pause(self)
-	-- Your code here
+	Utilities.saveCurrentTime()
 end
 
 function ColliderScene:resume()
 	ColliderScene.super.resume(self)
-	-- Your code here
+	Utilities.updateScoreSinceLastPlay()
 end
 
 local previous_crank_angle = 0

@@ -72,3 +72,11 @@ end
 function Utilities.saveCurrentTime()
 	Noble.GameData.set("lastGMT", playdate.getGMTTime())
 end
+
+function Utilities.updateScoreSinceLastPlay()
+	local secondsSinceLastPlay = Utilities.getTimeDiffInSeconds(Noble.GameData.get("lastGMT"), playdate.getGMTTime())
+	local current_score = Noble.GameData.get("score")
+	local auto_multiplier = Noble.GameData.get("auto_multiplier")
+	Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay))
+	Utilities.saveCurrentTime()
+end
