@@ -43,10 +43,20 @@ function ColliderScene:enter()
 	introSequence:start();
 	introSequenceBg = Sequence.new():from(0):to(1, 4.5, Ease.outBounce)
 	introSequenceBg:start();
+
+	-- Add sprites to the scene
+	thcSprite:add()
+	thcSprite:moveTo(200, 120)
+	thcSprite:setRotation(0)
+	outerWallSprite:add()
+	outerWallSprite:moveTo(200, 120)
+	particleSprite:add()
+	particleSprite:moveTo(200, 59)
+
+	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999", Noble.Text.FONT_LARGE)
 end
 
 local function SpawnNewSprite(x, y)
-	print("Array len:"..#sparkSprites)
 	local sprite = AnimatedSprite.new(particleImageTable)
 	sprite:addState("falling",nil, nil, nil, {loop = false}, true)
 	sprite.states["falling"].onFrameChangedEvent = function(self)
@@ -71,16 +81,7 @@ end
 -- This runs once a transition from another scene is complete.
 function ColliderScene:start()
 	ColliderScene.super.start(self)
-	-- Add sprites to the scene
-	thcSprite:add()
-	thcSprite:moveTo(200, 120)
-	thcSprite:setRotation(0)
-	outerWallSprite:add()
-	outerWallSprite:moveTo(200, 120)
-	particleSprite:add()
-	particleSprite:moveTo(200, 59)
 	Noble.Input.setCrankIndicatorStatus(true)
-	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999", Noble.Text.FONT_LARGE)
 	auto_timer = playdate.timer.keyRepeatTimerWithDelay(1000, 1000, function ()
 		local auto_multiplier = Noble.GameData.get("auto_multiplier")
 		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier)
