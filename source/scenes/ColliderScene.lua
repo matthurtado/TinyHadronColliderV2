@@ -85,6 +85,7 @@ function ColliderScene:start()
 	auto_timer = playdate.timer.keyRepeatTimerWithDelay(1000, 1000, function ()
 		local auto_multiplier = Noble.GameData.get("auto_multiplier")
 		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier)
+		Utilities.saveCurrentTime()
 		if(auto_multiplier < 10) then
 			SpawnNewSprites(auto_multiplier, 200, 120)
 		else
@@ -130,8 +131,8 @@ function ColliderScene:update()
 	if (radialPosition >= 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		Noble.GameData.set("score",
-			current_score + current_manual_multiplier + current_auto_multiplier)
+		Noble.GameData.set("score", current_score + current_manual_multiplier + current_auto_multiplier)
+		Utilities.saveCurrentTime()
 		SpawnNewSprite(math.random(5,395), 150)
 	end
 end
@@ -182,7 +183,7 @@ ColliderScene.inputHandler = {
 	rightButtonDown = function()
 	end,
 	cranked = function(change, acceleratedChange)
-		radialPosition += (1 * math.abs(change))
+		radialPosition = radialPosition + (1 * math.abs(change))
 		local theta = math.rad(change)
 		local newX, newY = Utilities.rotateAroundPoint(theta, particleSprite.x, particleSprite.y, 200, 120)
 		particleSprite:moveTo(newX, newY)

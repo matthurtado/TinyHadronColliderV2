@@ -12,6 +12,7 @@ Noble.Settings.setup({
 
 Noble.GameData.setup({
 	score = 0,
+	lastGMT = playdate.getGMTTime(),
 	auto_multiplier = 0,
 	manual_multiplier = 1,
 	items = {
@@ -62,6 +63,13 @@ Noble.GameData.setup({
 		},
 	}
 }, 1, true, true)
+
+-- update score based on idle time
+local secondsSinceLastPlay = Utilities.getTimeDiffInSeconds(Noble.GameData.get("lastGMT"), playdate.getGMTTime())
+local current_score = Noble.GameData.get("score")
+local auto_multiplier = Noble.GameData.get("auto_multiplier")
+Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay))
+Utilities.saveCurrentTime()
 
 Noble.showFPS = false
 
