@@ -53,7 +53,11 @@ function ColliderScene:enter()
 	particleSprite:add()
 	particleSprite:moveTo(200, 59)
 
-	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999", Noble.Text.FONT_LARGE)
+	-- allow wider score text if score is high enough on game start
+	local current_score = Noble.GameData.get("score")
+	local scoreforWidth = current_score > 999 and current_score or 999
+
+	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: "..scoreforWidth, Noble.Text.FONT_LARGE)
 end
 
 local function SpawnNewSprite(x, y)
