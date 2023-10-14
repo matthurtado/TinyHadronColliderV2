@@ -186,7 +186,7 @@ ColliderScene.inputHandler = {
 	rightButtonDown = function()
 	end,
 	cranked = function(change, acceleratedChange)
-		radialPosition = radialPosition + (1 * math.abs(change))
+		radialPosition += (1 * math.abs(change))
 		local theta = math.rad(change)
 		local newX, newY = Utilities.rotateAroundPoint(theta, particleSprite.x, particleSprite.y, 200, 120)
 		particleSprite:moveTo(newX, newY)
