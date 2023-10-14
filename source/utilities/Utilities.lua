@@ -41,16 +41,41 @@ function Utilities.tryPurchaseItem(item)
 	local items = Noble.GameData.get("items")
 
 	if (current_score >= next_price) then
-		Noble.GameData.set("score", current_score - next_price)
+		Noble.GameData.set("score", current_score - next_price, nil, false)
 		item.current_quantity = item.current_quantity + 1
 		items[item.item_id] = item
-		Noble.GameData.set("items", items)
-		Noble.GameData.set("auto_multiplier", Noble.GameData.get("auto_multiplier") + item.base_auto_multiplier)
-		Noble.GameData.set("manual_multiplier", Noble.GameData.get("manual_multiplier") + item.base_manual_multiplier)
-		Noble.GameData.save()
+		Noble.GameData.set("items", items, nil, false)
+		Noble.GameData.set("auto_multiplier", Noble.GameData.get("auto_multiplier") + item.base_auto_multiplier, nil, false)
+		Noble.GameData.set("manual_multiplier", Noble.GameData.get("manual_multiplier") + item.base_manual_multiplier, nil, false)
 		return true
 	else
 		print("Not enough money!")
 		return false
 	end
+end
+
+--find distance between two gmt time tables (taken from https://github.com/TotsIsTots/Cookie-Cranker/blob/30d47814a58f0c2c863e75c3014b9159cde032b0/source/main.lua#L20-L31)
+function Utilities.getTimeDiffInSeconds(t1, t2)
+	local yearDiff = t2["year"] - t1["year"]
+	local monthDiff = t2["month"] - t1["month"]
+	local dayDiff = t2["day"] - t1["day"]
+	local hourDiff = t2["hour"] - t1["hour"]
+	local minuteDiff = t2["minute"] - t1["minute"]
+	local secondDiff = t2["second"] - t1["second"]
+	local millisecondDiff = t2["millisecond"] - t1["millisecond"]
+	return (yearDiff * 31536000) + (monthDiff * 2592000) + (dayDiff * 86400) + (hourDiff * 3600) + (minuteDiff * 60) +
+			secondDiff + (millisecondDiff / 1000)
+end
+
+function Utilities.updateTimeAndSave()
+	Noble.GameData.set("lastGMT", playdate.getGMTTime(), nil, false)
+	Noble.GameData.save()
+end
+
+function Utilities.updateScoreSinceLastPlay()
+	local secondsSinceLastPlay = Utilities.getTimeDiffInSeconds(Noble.GameData.get("lastGMT"), playdate.getGMTTime())
+	local current_score = Noble.GameData.get("score")
+	local auto_multiplier = Noble.GameData.get("auto_multiplier")
+	Noble.GameData.set("score", current_score + auto_multiplier * math.floor(secondsSinceLastPlay), nil, false)
+	Utilities.updateTimeAndSave()
 end

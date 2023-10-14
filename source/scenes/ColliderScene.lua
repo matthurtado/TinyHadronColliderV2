@@ -43,10 +43,24 @@ function ColliderScene:enter()
 	introSequence:start();
 	introSequenceBg = Sequence.new():from(0):to(1, 4.5, Ease.outBounce)
 	introSequenceBg:start();
+
+	-- Add sprites to the scene
+	thcSprite:add()
+	thcSprite:moveTo(200, 120)
+	thcSprite:setRotation(0)
+	outerWallSprite:add()
+	outerWallSprite:moveTo(200, 120)
+	particleSprite:add()
+	particleSprite:moveTo(200, 59)
+
+	-- allow wider score text if score is high enough on game start
+	local current_score = Noble.GameData.get("score")
+	local scoreforWidth = current_score > 999 and current_score or 999
+
+	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: "..scoreforWidth, Noble.Text.FONT_LARGE)
 end
 
 local function SpawnNewSprite(x, y)
-	print("Array len:"..#sparkSprites)
 	local sprite = AnimatedSprite.new(particleImageTable)
 	sprite:addState("falling",nil, nil, nil, {loop = false}, true)
 	sprite.states["falling"].onFrameChangedEvent = function(self)
@@ -71,19 +85,10 @@ end
 -- This runs once a transition from another scene is complete.
 function ColliderScene:start()
 	ColliderScene.super.start(self)
-	-- Add sprites to the scene
-	thcSprite:add()
-	thcSprite:moveTo(200, 120)
-	thcSprite:setRotation(0)
-	outerWallSprite:add()
-	outerWallSprite:moveTo(200, 120)
-	particleSprite:add()
-	particleSprite:moveTo(200, 59)
 	Noble.Input.setCrankIndicatorStatus(true)
-	scoreTextWidth = Utilities.getHorizontalCenterForText("Score: 999", Noble.Text.FONT_LARGE)
 	auto_timer = playdate.timer.keyRepeatTimerWithDelay(1000, 1000, function ()
 		local auto_multiplier = Noble.GameData.get("auto_multiplier")
-		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier)
+		Noble.GameData.set("score", Noble.GameData.get("score") + auto_multiplier, nil, false)
 		if(auto_multiplier < 10) then
 			SpawnNewSprites(auto_multiplier, 200, 120)
 		else
@@ -129,8 +134,7 @@ function ColliderScene:update()
 	if (radialPosition >= 360) then
 		radialPosition = 0
 		particleSprite:setImageDrawMode(playdate.graphics.kDrawModeNXOR)
-		Noble.GameData.set("score",
-			current_score + current_manual_multiplier + current_auto_multiplier)
+		Noble.GameData.set("score", current_score + current_manual_multiplier + current_auto_multiplier, nil, false)
 		SpawnNewSprite(math.random(5,395), 150)
 	end
 end
@@ -145,6 +149,7 @@ end
 function ColliderScene:exit()
 	ColliderScene.super.exit(self)
 	-- Your code here
+	Utilities.updateTimeAndSave()
 	thcSprite:remove()
 	outerWallSprite:remove()
 	particleSprite:remove()
@@ -160,12 +165,12 @@ end
 
 function ColliderScene:pause()
 	ColliderScene.super.pause(self)
-	-- Your code here
+	Utilities.updateTimeAndSave()
 end
 
 function ColliderScene:resume()
 	ColliderScene.super.resume(self)
-	-- Your code here
+	Utilities.updateScoreSinceLastPlay()
 end
 
 local previous_crank_angle = 0

@@ -12,6 +12,7 @@ Noble.Settings.setup({
 
 Noble.GameData.setup({
 	score = 0,
+	lastGMT = playdate.getGMTTime(),
 	auto_multiplier = 0,
 	manual_multiplier = 1,
 	items = {
@@ -62,6 +63,25 @@ Noble.GameData.setup({
 		},
 	}
 }, 1, true, true)
+
+-- update score based on seconds since the game was last played
+Utilities.updateScoreSinceLastPlay()
+
+function playdate.deviceWillLock()
+	Utilities.updateTimeAndSave()
+end
+
+function playdate.deviceDidUnlock()
+	Utilities.updateScoreSinceLastPlay()
+end
+
+function playdate.gameWillTerminate()
+	Utilities.updateTimeAndSave()
+end
+
+function playdate.deviceWillSleep()
+	Utilities.updateTimeAndSave()
+end
 
 Noble.showFPS = false
 

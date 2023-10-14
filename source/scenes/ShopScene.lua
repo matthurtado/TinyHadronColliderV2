@@ -113,6 +113,7 @@ end
 
 function ShopScene:exit()
 	ShopScene.super.exit(self)
+	Utilities.updateTimeAndSave()
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
 
